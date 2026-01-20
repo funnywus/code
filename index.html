@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 视频导演 | 棵鹰科技</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+      
+      :root {
+        --cinematic-black: #020202;
+        --accent-blue: #3b82f6;
+      }
+
+      body {
+        font-family: 'Inter', 'Noto Sans SC', sans-serif;
+        background-color: var(--cinematic-black);
+        color: #e2e2e2;
+        font-size: 16px;
+        overflow: hidden;
+        margin: 0;
+      }
+
+      /* 电影感噪声纹理层 */
+      .grain {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        pointer-events: none;
+        opacity: 0.05;
+        background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+      }
+
+      /* 动态电影名场面背景 */
+      .cinematic-bg {
+        position: fixed;
+        top: -5%;
+        left: -5%;
+        width: 110%;
+        height: 110%;
+        z-index: 0;
+        background: url('https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
+        filter: saturate(0.4) brightness(0.35) contrast(1.1);
+        animation: kenBurns 40s ease-in-out infinite alternate;
+        pointer-events: none;
+      }
+
+      @keyframes kenBurns {
+        0% { transform: scale(1) translate(0, 0); }
+        50% { transform: scale(1.1) translate(-2%, -2%); }
+        100% { transform: scale(1.05) translate(1%, 1%); }
+      }
+
+      /* 动态流光特效 */
+      .light-leak {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: none;
+        background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+        animation: floatLight 15s ease-in-out infinite alternate;
+      }
+
+      @keyframes floatLight {
+        0% { opacity: 0.3; transform: translate(0, 0); }
+        100% { opacity: 0.7; transform: translate(5%, 5%); }
+      }
+
+      .cinematic-mask {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        background: radial-gradient(circle at center, transparent 20%, var(--cinematic-black) 90%);
+        pointer-events: none;
+      }
+
+      #root {
+        position: relative;
+        z-index: 100;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.1);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        backdrop-filter: blur(5px);
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      h1, h2, h3 {
+        text-shadow: 0 0 20px rgba(0,0,0,0.5);
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+    "jszip": "https://esm.sh/jszip@3.10.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div class="cinematic-bg"></div>
+    <div class="light-leak"></div>
+    <div class="cinematic-mask"></div>
+    <div class="grain"></div>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
