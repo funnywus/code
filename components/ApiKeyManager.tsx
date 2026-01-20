@@ -17,11 +17,6 @@ export const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ onKeySet }) => {
       setError('请输入有效的 API Key');
       return;
     }
-    
-    if (!apiKey.startsWith('AIza')) {
-      setError('API Key 格式不正确，应以 AIza 开头');
-      return;
-    }
 
     localStorage.setItem(API_KEY_STORAGE_KEY, apiKey.trim());
     onKeySet(apiKey.trim());
