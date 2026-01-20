@@ -40,6 +40,9 @@ const getStoredApiKey = (): string => {
 
 const getAI = () => new GoogleGenAI({ apiKey: getStoredApiKey() });
 
+// 导出供其他组件使用
+export const createAI = () => getAI();
+
 const STYLE_PROMPTS: Record<PlotStyle, string> = {
   [PlotStyle.ANIME]: "2D high-quality anime cel shaded style, vibrant colors, clean lines, Japanese manga aesthetic, hand-drawn look.",
   [PlotStyle.REALISTIC]: "Highly photorealistic cinematic live-action photography, 8k RAW photo, masterwork, detailed skin textures, realistic human features, cinematic lighting.",

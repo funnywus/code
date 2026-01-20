@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { StorefrontCanvasConfig } from '../types';
 import { Plus, Trash2, Upload, X, Loader2, Sparkles, Download, Maximize2, Settings2, Store, ShoppingBag, ArrowLeft, ArrowRight, Zap, Image as ImageIcon, ShieldCheck, CheckCircle2, Layout, ToggleLeft, ToggleRight } from 'lucide-react';
-import { GoogleGenAI } from "@google/genai";
-import { fileToPart, urlToBase64Part } from '../services/geminiService';
+import { fileToPart, urlToBase64Part, createAI } from '../services/geminiService';
 
 interface Props {
   onBack: () => void;
@@ -51,7 +50,7 @@ const StepStorefrontDesigner: React.FC<Props> = ({ onBack }) => {
   const generateLogo = async () => {
     setLogoConfig(prev => ({ ...prev, isGenerating: true }));
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+      const ai = createAI();
       
       const results: string[] = [];
       const promises = Array(3).fill(0).map(() => {
@@ -94,7 +93,7 @@ const StepStorefrontDesigner: React.FC<Props> = ({ onBack }) => {
 
     updateCanvas(id, { isGenerating: true });
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+      const ai = createAI();
       const logoUrl = (useLogoAnchor && logoConfig.selectedIdx !== null && logoConfig.generated[logoConfig.selectedIdx]) 
         ? logoConfig.generated[logoConfig.selectedIdx] 
         : null;

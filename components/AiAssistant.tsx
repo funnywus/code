@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Sparkles, Copy, Check, Loader2, Bot, ChevronDown, Eraser } from 'lucide-react';
-import { GoogleGenAI, Chat } from "@google/genai";
+import { Chat } from "@google/genai";
+import { createAI } from '../services/geminiService';
 
 // Sub-component for Prompt Blocks with Copy functionality
 const PromptBlock: React.FC<{ content: string }> = ({ content }) => {
@@ -52,7 +53,7 @@ const AiAssistant: React.FC = () => {
 
   const initChat = () => {
     if (!chatRef.current) {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = createAI();
       chatRef.current = ai.chats.create({
         model: 'gemini-3-pro-preview',
         config: {
