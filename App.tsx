@@ -18,6 +18,7 @@ import Step3_2PlotEnvironment from './components/Step3_2PlotEnvironment';
 import Step3_5PlotOutfitting from './components/Step3_5PlotOutfitting';
 import StepStorefrontDesigner from './components/StepStorefrontDesigner';
 import AiAssistant from './components/AiAssistant';
+import ApiKeyManager, { getStoredApiKey, clearStoredApiKey } from './components/ApiKeyManager';
 import { Clapperboard, Layers, Wand2, Image as ImageIcon, Video, Sparkles, RotateCcw, MousePointer2, PencilLine, ArrowRight, ArrowLeft, Home, ShoppingBag, Settings, Layout, MessageCircle, ShieldCheck, UserCircle, Film, Shirt, Key, AlertTriangle, Mountain, Send, Zap, MessageSquare, Store } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -37,8 +38,7 @@ const App: React.FC = () => {
   const [imageModel] = useState<ImageModel>('gemini-3-pro-image-preview');
   const [plotProposal, setPlotProposal] = useState<any>(null);
 
-  const [hasApiKey, setHasApiKey] = useState(false);
-  const [showKeySelectionOverlay, setShowKeySelectionOverlay] = useState(false);
+  const [showApiKeyManager, setShowApiKeyManager] = useState(false);
 
   const steps = useMemo(() => {
     if (!mode) return [];
@@ -71,27 +71,23 @@ const App: React.FC = () => {
   }, [mode]);
 
   useEffect(() => {
-    const checkKey = async () => {
-      if ((window as any).aistudio?.hasSelectedApiKey) {
-        const selected = await (window as any).aistudio.hasSelectedApiKey();
-        setHasApiKey(selected);
-      } else setHasApiKey(true);
-    };
-    checkKey();
+    // 检查是否已有存储的 API Key
+    const storedKey = getStoredApiKey();
+    if (!storedKey) {
+      setShowApiKeyManager(true);
+    }
   }, []);
 
-  const openKeyDialog = async () => {
-    if ((window as any).aistudio?.openSelectKey) {
-      await (window as any).aistudio.openSelectKey();
-      setHasApiKey(true);
-      setShowKeySelectionOverlay(false);
-    }
+  const handleApiKeySet = (key: string) => {
+    setShowApiKeyManager(false);
   };
 
-  const handleSelectMode = async (m: WorkflowMode) => {
-    if ((window as any).aistudio?.hasSelectedApiKey) {
-      const selected = await (window as any).aistudio.hasSelectedApiKey();
-      if (!selected) { setShowKeySelectionOverlay(true); return; }
+  const handleSelectMode = (m: WorkflowMode) => {
+    // 再次检查 API Key
+    const storedKey = getStoredApiKey();
+    if (!storedKey) {
+      setShowApiKeyManager(true);
+      return;
     }
     setMode(m);
     if (m === WorkflowMode.STOREFRONT) {
@@ -123,15 +119,7 @@ const App: React.FC = () => {
     <div className="h-screen bg-transparent text-zinc-100 flex overflow-hidden font-sans selection:bg-blue-500/30 relative">
       <AiAssistant />
       
-      {showKeySelectionOverlay && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/90 backdrop-blur-2xl p-6">
-          <div className="max-w-md w-full bg-zinc-900 border border-white/10 p-10 rounded-[48px] text-center space-y-8">
-            <Key size={40} className="text-amber-500 mx-auto" />
-            <h2 className="text-3xl font-black text-white uppercase">API Key 授权验证</h2>
-            <button onClick={openKeyDialog} className="w-full py-5 bg-amber-500 text-black font-black rounded-[24px]">选择并激活 Key</button>
-          </div>
-        </div>
-      )}
+      {showApiKeyManager && <ApiKeyManager onKeySet={handleApiKeySet} />}
 
       <aside className={`w-96 bg-black/80 backdrop-blur-[80px] border-r border-white/10 flex flex-col shadow-2xl z-20 flex-shrink-0 transition-all duration-700 ${currentStep === AppStep.MODE_SELECTION ? 'translate-x-[-100%] opacity-0 pointer-events-none' : 'translate-x-0 opacity-100'}`}>
         <div className="p-12 pb-8 border-b border-white/5 flex flex-col gap-4">
@@ -167,6 +155,12 @@ const App: React.FC = () => {
              </div>
              <div className="text-sm font-black text-white tracking-widest font-mono">微信咨询: CoinTuring</div>
           </div>
+          <button 
+            onClick={() => setShowApiKeyManager(true)} 
+            className="w-full py-5 bg-zinc-900 text-zinc-300 rounded-[28px] font-black border border-white/5 flex items-center justify-center gap-4 hover:bg-zinc-800 transition-colors"
+          >
+            <Key size={22} /> 修改 API Key
+          </button>
           <button onClick={handleRestart} className="w-full py-5 bg-zinc-900 text-zinc-300 rounded-[28px] font-black border border-white/5 flex items-center justify-center gap-4 hover:bg-zinc-800 transition-colors">
             <Home size={22} /> 返回模式选择
           </button>

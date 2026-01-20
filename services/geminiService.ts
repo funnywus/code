@@ -29,7 +29,16 @@ export const urlToBase64Part = async (url: string): Promise<{ inlineData: { data
   });
 };
 
-const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+const getStoredApiKey = (): string => {
+  // 优先使用本地存储的 Key
+  const localKey = localStorage.getItem('gemini_api_key');
+  if (localKey) return localKey;
+  
+  // 回退到环境变量
+  return import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || "";
+};
+
+const getAI = () => new GoogleGenAI({ apiKey: getStoredApiKey() });
 
 const STYLE_PROMPTS: Record<PlotStyle, string> = {
   [PlotStyle.ANIME]: "2D high-quality anime cel shaded style, vibrant colors, clean lines, Japanese manga aesthetic, hand-drawn look.",
